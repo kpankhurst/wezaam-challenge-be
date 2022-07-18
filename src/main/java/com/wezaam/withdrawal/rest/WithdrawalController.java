@@ -49,27 +49,22 @@ public class WithdrawalController {
         }
 
         WithdrawalService withdrawalService = context.getBean(WithdrawalService.class);
-        Object body;
+
+        WithdrawalScheduled withdrawalScheduled = new WithdrawalScheduled();
+        withdrawalScheduled.setUserId(Long.parseLong(userId));
+        withdrawalScheduled.setPaymentMethodId(Long.parseLong(paymentMethodId));
+        withdrawalScheduled.setAmount(Double.parseDouble(amount));
+        withdrawalScheduled.setCreatedAt(Instant.now());
         if (executeAt.equals("ASAP")) {
-            Withdrawal withdrawal = new Withdrawal();
-            withdrawal.setUserId(Long.parseLong(userId));
-            withdrawal.setPaymentMethodId(Long.parseLong(paymentMethodId));
-            withdrawal.setAmount(Double.parseDouble(amount));
-            withdrawal.setCreatedAt(Instant.now());
-            withdrawal.setStatus(WithdrawalStatus.PENDING);
-            withdrawalService.create(withdrawal);
-            body = withdrawal;
-        } else {
-            WithdrawalScheduled withdrawalScheduled = new WithdrawalScheduled();
-            withdrawalScheduled.setUserId(Long.parseLong(userId));
-            withdrawalScheduled.setPaymentMethodId(Long.parseLong(paymentMethodId));
-            withdrawalScheduled.setAmount(Double.parseDouble(amount));
-            withdrawalScheduled.setCreatedAt(Instant.now());
-            withdrawalScheduled.setExecuteAt(Instant.parse(executeAt));
-            withdrawalScheduled.setStatus(WithdrawalStatus.PENDING);
-            withdrawalService.schedule(withdrawalScheduled);
-            body = withdrawalScheduled;
+        	withdrawalScheduled.setExecuteAt(Instant.now());
         }
+        else {
+        	withdrawalScheduled.setExecuteAt(Instant.parse(executeAt));
+        }
+        withdrawalScheduled.setRetries(0L);
+        withdrawalScheduled.setStatus(WithdrawalStatus.PENDING);
+        withdrawalService.schedule(withdrawalScheduled);
+        Object body = withdrawalScheduled;
 
         return new ResponseEntity(body, HttpStatus.OK);
     }

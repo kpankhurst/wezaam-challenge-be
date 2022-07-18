@@ -13,9 +13,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.List;
+import java.util.ArrayList;
 
 @Service
 public class WithdrawalService {
@@ -75,7 +78,12 @@ public class WithdrawalService {
 
     @Scheduled(fixedDelay = 5000)
     public void run() {
-        withdrawalScheduledRepository.findAllByExecuteAtBefore(Instant.now())
+    	List<WithdrawalStatus> statusList = new ArrayList<WithdrawalStatus>();
+    	statusList.add(WithdrawalStatus.PENDING);
+    	statusList.add(WithdrawalStatus.FAILED);
+    	statusList.add(WithdrawalStatus.INTERNAL_ERROR);
+    	
+        withdrawalScheduledRepository.findAllByExecuteAtBeforeAndStatusIn(Instant.now(), statusList)
                 .forEach(this::processScheduled);
     }
 
@@ -91,12 +99,17 @@ public class WithdrawalService {
             } catch (Exception e) {
                 if (e instanceof TransactionException) {
                     withdrawal.setStatus(WithdrawalStatus.FAILED);
+                    // Set executeAt to now + value
+                    withdrawal.incrementRetries();
+                    withdrawal.setExecuteAt(Instant.now().plus(30 * withdrawal.getRetries(), ChronoUnit.SECONDS));
                     withdrawalScheduledRepository.save(withdrawal);
-                    eventsService.send(withdrawal);
+                    // eventsService.send(withdrawal);
                 } else {
                     withdrawal.setStatus(WithdrawalStatus.INTERNAL_ERROR);
+                    withdrawal.incrementRetries();
+                    withdrawal.setExecuteAt(Instant.now().plus(30 * withdrawal.getRetries(), ChronoUnit.SECONDS));
                     withdrawalScheduledRepository.save(withdrawal);
-                    eventsService.send(withdrawal);
+                    // eventsService.send(withdrawal);
                 }
             }
         }

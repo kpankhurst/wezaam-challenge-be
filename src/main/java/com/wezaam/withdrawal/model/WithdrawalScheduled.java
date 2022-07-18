@@ -21,6 +21,7 @@ public class WithdrawalScheduled {
     private Instant executeAt;
     private Long userId;
     private Long paymentMethodId;
+    private Long retries;
     @Enumerated(EnumType.STRING)
     private WithdrawalStatus status;
 
@@ -54,6 +55,18 @@ public class WithdrawalScheduled {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Long getRetries() {
+        return retries;
+    }
+    
+    public Long incrementRetries() {
+    	return this.retries--;
+    }
+
+    public void setRetries(Long retries) {
+        this.retries = retries;
     }
 
     public Long getPaymentMethodId() {
