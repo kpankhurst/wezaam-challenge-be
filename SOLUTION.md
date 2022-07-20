@@ -1,7 +1,7 @@
 Issues
 
 1. It only retries once for a failed send. This should retry till it has been success.
-   SOLUTION: Set the status to failed or internal error and retry at a fixed time later (incrementing with each retry)
+   SOLUTION: Set the status to failed or internal error and retry at a fixed time later (incrementing delay time with each retry)
    
 2. Retry is immediate
    SOLUTION: Set the retry time to be now + (x * retryCount)

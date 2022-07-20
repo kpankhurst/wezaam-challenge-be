@@ -18,5 +18,6 @@ public interface WithdrawalScheduledRepository extends JpaRepository<WithdrawalS
     List<WithdrawalScheduled> findAllByExecuteAtBefore(Instant date);
     List<WithdrawalScheduled> findAllByExecuteAtBeforeAndStatus(Instant date, WithdrawalStatus status);
     List<WithdrawalScheduled> findAllByExecuteAtBeforeAndStatusIn(Instant date, List<WithdrawalStatus> status);
+    List<WithdrawalScheduled> findByUserId(Long userId);
 
 }

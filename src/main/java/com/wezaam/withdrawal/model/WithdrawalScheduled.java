@@ -5,12 +5,14 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+
+import java.io.Serializable;
 import java.time.Instant;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity(name = "scheduled_withdrawals")
-public class WithdrawalScheduled {
+public class WithdrawalScheduled implements Serializable{
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
