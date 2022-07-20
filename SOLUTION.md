@@ -13,4 +13,16 @@ Issues
    SOLUTION: Store all in WithdrawalScheduled with ASAP set to executeAt as now(). This will also reduce the risk of ASAP executing at the same
    			time as scheduled jobs, and reduce the risk of memory leaks during threading.
    
-5. 
+5. No check on maxwithdrawalamount 
+   SOLUTION: further error checking into the push event.
+   
+6. No messaging service for calls to event send
+   SOLUTION: Added
+
+7. No notification system.
+   SOLUTION: Added a table with notifications
+   
+8. JUnit testing
+   SOLUTION: Added some rest testing. Others that can be added are event messaging, notifications, retries failures, as well as others.
+   
+   PLEASE NOTE: no docker file created due to lack of time. Sorry.
